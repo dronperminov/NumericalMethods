@@ -14,7 +14,7 @@ int main() {
 	std::cout << "Enter method for solve ('euler' / 'euler advanced' / 'runge 3' / 'runge 4'): ";
 	getline(std::cin, method);
 
-	while (method != "euler" && method != "euler advanced" && method != "runge kutt 3" && method != "runge kutt 4") {
+	while (method != "euler" && method != "euler advanced" && method != "runge 3" && method != "runge 4") {
 		std::cout << "Incorrect method.Try again: ";
 		getline(std::cin, method);
 	}
