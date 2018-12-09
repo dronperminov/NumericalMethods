@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <cmath>
 
@@ -82,5 +83,5 @@ int main() {
 		}
 	}
 
-	std::cout << "Integrate = " << I << std::endl;
+	std::cout << "Integrate = " << std::setprecision(15) << I << std::endl;
 }

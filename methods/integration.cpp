@@ -1,62 +1,71 @@
 #include "integration.h"
 
+// метод левых прямоугольников
 double squareLeftIntegrate(Fpointer f, double a, double b, int n) {
-	double h = (b - a) / n;
+	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0;
 
+	// находим сумму по формуле левых прямоугольников
 	for(int i = 0; i <= n - 1; i++)
-		sum += f(a + h * i);
+		sum += f(a + i * h);
 
-	return sum * h;
+	return sum * h; // возвращаем найденное значение интеграла
 }
 
+// метод центральных прямоугольников
 double squareCenterIntegrate(Fpointer f, double a, double b, int n) {
-	double h = (b - a) / n;
+	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0;
 
+	// находим сумму по формуле центральных прямоугольников
 	for(int i = 1; i <= n; i++)
-		sum += f(a + h * (i - 0.5));
+		sum += f(a + (i - 0.5) * h);
 
-	return sum * h;
+	return sum * h; // возвращаем найденное значение интеграла
 }
 
+// метод правых прямоугольников
 double squareRightIntegrate(Fpointer f, double a, double b, int n) {
-	double h = (b - a) / n;
+	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0;
 
+	// находим сумму по формуле правых прямоугольников
 	for(int i = 1; i <= n; i++)
-		sum += f(a + h * i);
+		sum += f(a + i * h);
 
-	return sum * h;
+	return sum * h; // возвращаем найденное значение интеграла
 }
 
-
+// метод трапеций
 double trapecyIntegrate(Fpointer f, double a, double b, int n) {
-	double h = (b - a) / n;
-	double sum = 0;
+	double h = (b - a) / n; // шаг интегрирования
+	double sum = (f(a) + f(b)) / 2;
 
+	// находим сумму по формуле трапеций
 	for (int i = 1; i <= n - 1; i++)
-		sum += f(a + h * i);
+		sum += f(a + i * h);
 
-	return ((f(a) + f(b)) / 2 + sum) * h;
+	return sum * h; // возвращаем найденное значение интеграла
 }
 
-
+// метод Симпсона (парабол)
 double simpsonIntegrate(Fpointer f, double a, double b, int n) {
+	if (n % 2 != 0)
+		throw "n must be even";
+
 	double h = (b - a) / n;
-	double sum = 0;
-	double x = a + h;
+	double sum = f(a) + f(b);
+	
+	for (int i = 1; i <= n / 2; i++)
+		sum += 4 * f(a + (2 * i - 1) * h);
 
-	while (x < b) {
-		sum += 4 * f(x);
-		x += h;
-		sum += 2 * f(x);
-		x += h;
-	}
+	for (int i = 1; i < n / 2; i++)
+		sum += 2 * f(a + 2 * i * h);
 
-	return (f(a) + sum - f(b)) * h / 3;
+	return sum * h / 3; // возвращаем найденное значение интеграла
 }
 
+// метод Рунге-Кутты 4-го порядка
 double rungeKutt4Integrate(Fpointer f, double a, double b, int n) {
 	double h = (b - a) / n;
 
@@ -88,88 +97,97 @@ double rungeKutt4Integrate(Fpointer f, double a, double b, int n) {
 }
 
 /**************************** ИНТЕГРИРОВАНИЕ С ЗАДАННОЙ ТОЧНОСТЬЮ ****************************/
+// метод левых прямоугольников
 double squareLeftEpsIntegrate(Fpointer f, double a, double b, double eps) {
-	long n = 2;
+	long n = 2; // начальное число разбиений
 
-	double h = (b - a) / n;
+	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0, sum1;
 
+	// вычисляем значение интеграла для n = 2
 	for (int i = 0; i <= n - 1; i++)
-		sum += f(a + h * i);
+		sum += f(a + i * h);
+
 	sum *= h;
 
 	do {
-		sum1 = sum;
+		sum1 = sum; // обновляем старое значение суммы
+		sum = 0; // сбрасываем текущее
 
-		h /= 2;
-		n *= 2;
+		h /= 2; // дробим шаг в два раза
+		n *= 2; // увеличиваем число интервалов в два раза
 
-		sum = 0;
+		// считаем более точное значение интеграла
 		for (int i = 0; i <= n - 1; i++)
-			sum += f(a + h * i);
+			sum += f(a + i * h);
+
 		sum *= h;
-	} while (fabs(sum - sum1) > eps);
+	} while (fabs(sum - sum1) > eps); // повторяем, пока не достигнем нужной точности
 
-	//std::cout << "Square left iterations: " << n << std::endl;
-
-	return sum;
+	return sum; // возвращаем найденное значение интеграла
 }
 
+// метод центральных прямоугольников
 double squareCenterEpsIntegrate(Fpointer f, double a, double b, double eps) {
-	long n = 2;
+	long n = 2; // начальное число разбиений
 
-	double h = (b - a) / n;
+	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0, sum1;
 
+	// вычисляем значение интеграла для n = 2
 	for (int i = 1; i <= n; i++)
 		sum += f(a + h * (i - 0.5));
+
 	sum *= h;
 
 	do {
-		sum1 = sum;
+		sum1 = sum; // обновляем старое значение суммы
+		sum = 0; // сбрасываем текущее
 
-		h /= 2;
-		n *= 2;
+		h /= 2; // дробим шаг в два раза
+		n *= 2; // увеличиваем число интервалов в два раза
 
-		sum = 0;
+		// считаем более точное значение интеграла
 		for (int i = 1; i <= n; i++)
-			sum += f(a + h * (i - 0.5));
+			sum += f(a + (i - 0.5) * h);
+
 		sum *= h;
-	} while (fabs(sum - sum1) > eps);
+	} while (fabs(sum - sum1) > eps); // повторяем, пока не достигнем нужной точности
 
-	//std::cout << "Square center iterations: " << n << std::endl;
-
-	return sum;
+	return sum; // возвращаем найденное значение интеграла
 }
 
+// метод правых прямоугольников
 double squareRightEpsIntegrate(Fpointer f, double a, double b, double eps) {
-	long n = 2;
+	long n = 2; // начальное число разбиений
 
-	double h = (b - a) / n;
+	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0, sum1;
 
+	// вычисляем значение интеграла для n = 2
 	for (int i = 1; i <= n; i++)
-		sum += f(a + h * i);
+		sum += f(a + i * h);
+
 	sum *= h;
 
 	do {
-		sum1 = sum;
+		sum1 = sum; // обновляем старое значение суммы
+		sum = 0; // сбрасываем текущее
 
-		h /= 2;
-		n *= 2;
+		h /= 2; // дробим шаг в два раза
+		n *= 2; // увеличиваем число интервалов в два раза
 
-		sum = 0;
+		// считаем более точное значение интеграла
 		for (int i = 1; i <= n; i++)
-			sum += f(a + h * i);
+			sum += f(a + i * h);
+
 		sum *= h;
-	} while (fabs(sum - sum1) > eps);
+	} while (fabs(sum - sum1) > eps); // повторяем, пока не достигнем нужной точности
 
-	//std::cout << "Square right iterations: " << n << std::endl;
-
-	return sum;
+	return sum; // возвращаем найденное значение интеграла
 }
 
-
+// метод трапеций
 double trapecyEpsIntegrate(Fpointer f, double a, double b, double eps) {
 	long n = 2;
 
@@ -177,63 +195,58 @@ double trapecyEpsIntegrate(Fpointer f, double a, double b, double eps) {
 	double sum = 0, sum1;
 
 	for (int i = 1; i <= n - 1; i++)
-		sum += f(a + h * i);
+		sum += f(a + i * h);
 
 	sum = ((f(a) + f(b)) / 2 + sum) * h;
 
 	do {
 		sum1 = sum;
+		sum = 0;
 
 		h /= 2;
 		n *= 2;
 
-		sum = 0;
 		for (int i = 1; i <= n - 1; i++)
-			sum += f(a + h * i);
+			sum += f(a + i * h);
+
 		sum = ((f(a) + f(b)) / 2 + sum) * h;
 	} while (fabs(sum1 - sum) > eps);
-
-	//std::cout << "Trapecy iterations: " << n << std::endl;
 
 	return sum;
 }
 
-
+// метод Симпсона (парабол)
 double simpsonEpsIntegrate(Fpointer f, double a, double b, double eps) {
-	long n = 2;
+	long n = 2; // начальное число разбиений
 
-	double h = (b - a) / n;
+	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0, sum1;
-	double x = a + h;
+	
+	// вычисляем значение интеграла для n = 2
+	for (int i = 1; i <= n / 2; i++)
+		sum += 4 * f(a + (2 * i - 1) * h);
 
-	while (x < b) {
-		sum += 4 * f(x);
-		x += h;
-		sum += 2 * f(x);
-		x += h;
-	}
+	for (int i = 1; i < n / 2; i++)
+		sum += 2 * f(a + 2 * i * h);
 
-	sum = (f(a) + sum - f(b)) * h / 3;
+	sum = (f(a) + sum + f(b)) * h / 3;
 
 	do {
-		sum1 = sum;
+		sum1 = sum; // обновляем старое значение суммы
+		sum = 0; // сбрасываем текущее
 
-		h /= 2;
-		n *= 2;
+		h /= 2; // дробим шаг в два раза
+		n *= 2; // увеличиваем число интервалов в два раза
 
-		sum = 0;
-		double x = a + h;
-		while (x < b) {
-			sum += 4 * f(x);
-			x += h;
-			sum += 2 * f(x);
-			x += h;
-		}
+		// считаем более точное значение интеграла
+		for (int i = 1; i <= n / 2; i++)
+			sum += 4 * f(a + (2 * i - 1) * h);
 
-		sum = (f(a) + sum - f(b)) * h / 3;
-	} while (fabs(sum1 - sum) > eps);
+		for (int i = 1; i < n / 2; i++)
+			sum += 2 * f(a + 2 * i * h);
 
-	//std::cout << "Simpson iterations: " << n << std::endl;
+		sum = (f(a) + sum + f(b)) * h / 3;
+	} while (fabs(sum1 - sum) > eps); // повторяем, пока не достигнем нужной точности
 
-	return sum;
+	return sum; // возвращаем найденное значение интеграла
 }
