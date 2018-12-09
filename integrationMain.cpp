@@ -61,6 +61,9 @@ int main() {
 		else if (method == "bull") {
 			I = bullEpsIntegrate(f, a, b, eps);
 		}
+		else if (method == "runge kutt 4") {
+			I = rungeKutt4EpsIntegrate(f, a, b, eps);
+		}
 	}
 	else {
 		std::cout << "Enter n: ";

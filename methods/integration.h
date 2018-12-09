@@ -28,3 +28,5 @@ double trapecyEpsIntegrate(Fpointer f, double a, double b, double eps); // ме�
 double simpsonEpsIntegrate(Fpointer f, double a, double b, double eps); // методом Симпсона (парабол)
 
 double bullEpsIntegrate(Fpointer f, double a, double b, double eps); // методом Буля
+
+double rungeKutt4EpsIntegrate(Fpointer f, double a, double b, double eps); // методом Рунге-Кутты 4-го порядка
