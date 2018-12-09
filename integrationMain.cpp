@@ -20,10 +20,10 @@ int main() {
 	}
 
 	std::string method;
-	std::cout << "Enter method ('square left' / 'square center' / 'square right' / 'trapecy' / 'simpson'): ";
+	std::cout << "Enter method ('square left' / 'square center' / 'square right' / 'trapecy' / 'simpson' / 'runge kutt 4'): ";
 	getline(std::cin, method);
 
-	while (method != "square left" && method != "square center" && method != "square right" && method != "trapecy" && method != "simpson") {
+	while (method != "square left" && method != "square center" && method != "square right" && method != "trapecy" && method != "simpson" && method != "runge kutt 4") {
 		std::cout << "Incorrect option. Try again: ";
 		getline(std::cin, method);
 	}
@@ -76,6 +76,9 @@ int main() {
 		}
 		else if (method == "simpson") {
 			I = simpsonIntegrate(f, a, b, n);
+		}
+		else if (method == "runge kutt 4") {
+			I = rungeKutt4Integrate(f, a, b, n);
 		}
 	}
 

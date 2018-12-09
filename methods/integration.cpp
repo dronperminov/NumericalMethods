@@ -57,6 +57,36 @@ double simpsonIntegrate(Fpointer f, double a, double b, int n) {
 	return (f(a) + sum - f(b)) * h / 3;
 }
 
+double rungeKutt4Integrate(Fpointer f, double a, double b, int n) {
+	double h = (b - a) / n;
+
+	double x0 = a; // начальные условия
+	double y0 = 0; // задачи Коши
+
+	double x; // текущие значения
+	double y; // решения задачи Коши
+
+	// находим интегральную кривую
+	for (int i = 1; i < n; i++) {
+		x = x0 + h; // определяем новый x
+
+		// считаем коэффициенты метода Рунге-Кутты
+		double k1 = f(x0);
+		double k2 = f(x0 + h / 2);
+		double k3 = f(x0 + h / 2);
+		double k4 = f(x0 + h);
+
+		// находим новое значение y
+		y = y0 + h * (k1 + 2 * k2 + 2 * k3 + k4) / 6;
+
+		// сдвигаем начальную точку
+		x0 = x;
+		y0 = y;
+	}
+
+	return y;
+}
+
 /**************************** ИНТЕГРИРОВАНИЕ С ЗАДАННОЙ ТОЧНОСТЬЮ ****************************/
 double squareLeftEpsIntegrate(Fpointer f, double a, double b, double eps) {
 	long n = 2;
