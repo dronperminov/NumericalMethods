@@ -53,7 +53,7 @@ double simpsonIntegrate(Fpointer f, double a, double b, int n) {
 	if (n % 2 != 0)
 		throw "n must be even";
 
-	double h = (b - a) / n;
+	double h = (b - a) / n; // шаг интегрирования
 	double sum = f(a) + f(b);
 	
 	for (int i = 1; i <= n / 2; i++)
@@ -63,6 +63,26 @@ double simpsonIntegrate(Fpointer f, double a, double b, int n) {
 		sum += 2 * f(a + 2 * i * h);
 
 	return sum * h / 3; // возвращаем найденное значение интеграла
+}
+
+// метод Буля
+double bullIntegrate(Fpointer f, double a, double b, int n) {
+	if (n % 4 != 0)
+		throw "n must be a multiple of 4";
+
+	double h = (b - a) / n; // шаг интегрирования
+	double sum = 7 * (f(a) 	+ f(b));
+
+	for (int i = 1; i < n / 4; i++)
+		sum += 14 * f(a + 4 * i * h);
+
+	for (int i = 1; i <= n / 2; i++)
+		sum += 32 * f(a + (2 * i - 1) * h);
+
+	for (int i = 1; i <= n / 4; i++)
+		sum += 12 * f(a + (4 * i - 2) * h);
+
+	return sum * 4 * h / 90;
 }
 
 // метод Рунге-Кутты 4-го порядка
@@ -246,6 +266,48 @@ double simpsonEpsIntegrate(Fpointer f, double a, double b, double eps) {
 			sum += 2 * f(a + 2 * i * h);
 
 		sum = (f(a) + sum + f(b)) * h / 3;
+	} while (fabs(sum1 - sum) > eps); // повторяем, пока не достигнем нужной точности
+
+	return sum; // возвращаем найденное значение интеграла
+}
+
+// метод Буля
+double bullEpsIntegrate(Fpointer f, double a, double b, double eps) {
+	long n = 4; // начальное число разбиений
+	
+	double h = (b - a) / n; // шаг интегрирования
+	double sum = 7 * (f(a) + f(b));
+	double sum1;
+
+	for (int i = 1; i < n / 4; i++)
+		sum += 14 * f(a + 4 * i * h);
+
+	for (int i = 1; i <= n / 2; i++)
+		sum += 32 * f(a + (2 * i - 1) * h);
+
+	for (int i = 1; i <= n / 4; i++)
+		sum += 12 * f(a + (4 * i - 2) * h);
+
+	sum *= 4 * h / 90;
+
+	do {
+		sum1 = sum; // обновляем старое значение суммы
+		sum = 7 * (f(a) + f(b)); // сбрасываем текущее
+
+		h /= 4; // дробим шаг в четыре раза
+		n *= 4; // увеличиваем число интервалов в четыре раза
+
+		// считаем более точное значение интеграла
+		for (int i = 1; i < n / 4; i++)
+			sum += 14 * f(a + 4 * i * h);
+
+		for (int i = 1; i <= n / 2; i++)
+			sum += 32 * f(a + (2 * i - 1) * h);
+
+		for (int i = 1; i <= n / 4; i++)
+			sum += 12 * f(a + (4 * i - 2) * h);
+
+		sum *= 4 * h / 90;
 	} while (fabs(sum1 - sum) > eps); // повторяем, пока не достигнем нужной точности
 
 	return sum; // возвращаем найденное значение интеграла

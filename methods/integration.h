@@ -14,6 +14,8 @@ double trapecyIntegrate(Fpointer f, double a, double b, int n); // методо�
 
 double simpsonIntegrate(Fpointer f, double a, double b, int n); // методом Симпсона (парабол)
 
+double bullIntegrate(Fpointer f, double a, double b, int n); // методом Буля
+
 double rungeKutt4Integrate(Fpointer f, double a, double b, int n); // методом Рунге-Кутты 4-го порядка
 
 // Интегрирование с заданной точностью
@@ -24,3 +26,5 @@ double squareRightEpsIntegrate(Fpointer f, double a, double b, double eps); // �
 double trapecyEpsIntegrate(Fpointer f, double a, double b, double eps); // методом трапеций
 
 double simpsonEpsIntegrate(Fpointer f, double a, double b, double eps); // методом Симпсона (парабол)
+
+double bullEpsIntegrate(Fpointer f, double a, double b, double eps); // методом Буля
