@@ -85,6 +85,21 @@ double bullIntegrate(Fpointer f, double a, double b, int n) {
 	return sum * 4 * h / 90;
 }
 
+// метод Гаусса для 3 точек
+double gaussIntegrate(Fpointer f, double a, double b, int n) {
+	const double Xi[3] = { -sqrt(0.6), 0, sqrt(0.6) }; // узлы интегрирования
+	const double Ci[3] = { 5.0 / 9, 8.0 / 9, 5.0 / 9 }; // веса интегрирования
+
+	double h = (b - a) / n; // шаг интегрирования
+	double sum = 0;
+
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < 3; j++)
+			sum += Ci[j] * f(a + (2 * i + 1 + Xi[j]) * h / 2);
+
+	return sum * h / 2; // возвращаем найденное значение интеграла
+}
+
 // метод Рунге-Кутты 4-го порядка
 double rungeKutt4Integrate(Fpointer f, double a, double b, int n) {
 	double h = (b - a) / n;
@@ -309,6 +324,42 @@ double bullEpsIntegrate(Fpointer f, double a, double b, double eps) {
 
 		sum *= 4 * h / 90;
 	} while (fabs(sum1 - sum) > eps); // повторяем, пока не достигнем нужной точности
+
+	return sum; // возвращаем найденное значение интеграла
+}
+
+// метод Гаусса для 3 точек
+double gaussEpsIntegrate(Fpointer f, double a, double b, double eps) {
+	const double Xi[3] = { -sqrt(0.6), 0, sqrt(0.6) }; // узлы интегрирования
+	const double Ci[3] = { 5.0 / 9, 8.0 / 9, 5.0 / 9 }; // веса интегрирования
+
+	long n = 2; // начальное число разбиений
+
+	double h = (b - a) / n; // шаг интегрирования
+	double sum = 0;
+	double sum1;
+
+	// вычисялем значение интеграла
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < 3; j++)
+			sum += Ci[j] * f(a + (2 * i + 1 + Xi[j]) * h / 2);
+
+	sum *= h / 2;
+
+	do {
+		sum1 = sum; // обновляем старое значение суммы
+		sum = 0; // сбрасываем текущее
+
+		h /= 2; // дробим шаг в два раза
+		n *= 2; // увеличиваем число интервалов в два раза
+
+		// считаем более точное значение интеграла
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < 3; j++)
+				sum += Ci[j] * f(a + (2 * i + 1 + Xi[j]) * h / 2);
+
+		sum *= h / 2;
+	} while (fabs(sum - sum1) > eps); // повторяем, пока не достигнем нужной точности
 
 	return sum; // возвращаем найденное значение интеграла
 }

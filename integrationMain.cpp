@@ -21,10 +21,10 @@ int main() {
 	}
 
 	std::string method;
-	std::cout << "Enter method ('square left' / 'square center' / 'square right' / 'trapecy' / 'simpson' / 'bull' / 'runge kutt 4'): ";
+	std::cout << "Enter method ('square left' / 'square center' / 'square right' / 'trapecy' / 'simpson' / 'bull' / 'gauss' / 'runge kutt 4'): ";
 	getline(std::cin, method);
 
-	while (method != "square left" && method != "square center" && method != "square right" && method != "trapecy" && method != "simpson" && method != "bull" && method != "runge kutt 4") {
+	while (method != "square left" && method != "square center" && method != "square right" && method != "trapecy" && method != "simpson" && method != "bull" && method != "gauss" && method != "runge kutt 4") {
 		std::cout << "Incorrect option. Try again: ";
 		getline(std::cin, method);
 	}
@@ -61,6 +61,9 @@ int main() {
 		else if (method == "bull") {
 			I = bullEpsIntegrate(f, a, b, eps);
 		}
+		else if (method == "gauss") {
+			I = gaussEpsIntegrate(f, a, b, eps);
+		}
 		else if (method == "runge kutt 4") {
 			I = rungeKutt4EpsIntegrate(f, a, b, eps);
 		}
@@ -86,6 +89,9 @@ int main() {
 		}
 		else if (method == "bull") {
 			I = bullIntegrate(f, a, b, n);
+		}
+		else if (method == "gauss") {
+			I = gaussIntegrate(f, a, b, n);
 		}
 		else if (method == "runge kutt 4") {
 			I = rungeKutt4Integrate(f, a, b, n);
