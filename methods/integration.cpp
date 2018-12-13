@@ -1,7 +1,7 @@
 #include "integration.h"
 
 // метод левых прямоугольников
-double squareLeftIntegrate(Fpointer f, double a, double b, int n) {
+double squareLeftIntegrate(double (*f)(double), double a, double b, int n) {
 	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0;
 
@@ -13,7 +13,7 @@ double squareLeftIntegrate(Fpointer f, double a, double b, int n) {
 }
 
 // метод центральных прямоугольников
-double squareCenterIntegrate(Fpointer f, double a, double b, int n) {
+double squareCenterIntegrate(double (*f)(double), double a, double b, int n) {
 	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0;
 
@@ -25,7 +25,7 @@ double squareCenterIntegrate(Fpointer f, double a, double b, int n) {
 }
 
 // метод правых прямоугольников
-double squareRightIntegrate(Fpointer f, double a, double b, int n) {
+double squareRightIntegrate(double (*f)(double), double a, double b, int n) {
 	double h = (b - a) / n; // шаг интегрирования
 	double sum = 0;
 
@@ -37,7 +37,7 @@ double squareRightIntegrate(Fpointer f, double a, double b, int n) {
 }
 
 // метод трапеций
-double trapecyIntegrate(Fpointer f, double a, double b, int n) {
+double trapecyIntegrate(double (*f)(double), double a, double b, int n) {
 	double h = (b - a) / n; // шаг интегрирования
 	double sum = (f(a) + f(b)) / 2;
 
@@ -49,7 +49,7 @@ double trapecyIntegrate(Fpointer f, double a, double b, int n) {
 }
 
 // метод Симпсона (парабол)
-double simpsonIntegrate(Fpointer f, double a, double b, int n) {
+double simpsonIntegrate(double (*f)(double), double a, double b, int n) {
 	if (n % 2 != 0)
 		throw "n must be even";
 
@@ -66,7 +66,7 @@ double simpsonIntegrate(Fpointer f, double a, double b, int n) {
 }
 
 // метод Буля
-double bullIntegrate(Fpointer f, double a, double b, int n) {
+double bullIntegrate(double (*f)(double), double a, double b, int n) {
 	if (n % 4 != 0)
 		throw "n must be a multiple of 4";
 
@@ -85,8 +85,46 @@ double bullIntegrate(Fpointer f, double a, double b, int n) {
 	return sum * 4 * h / 90;
 }
 
+// метод Ньютона - Котеса, полином степени power (0 <= power < 10)
+double newtoneKotesIntegrate(double (*f)(double), double a, double b, int n, int power) {
+	// коэффициенты метода Ньютона-Котеса
+	int coef[10][10] = {
+		{     1,     0,     0,     0,     0,     0,     0,     0,     0,     0 },
+		{     1,     1,     0,     0,     0,     0,     0,     0,     0,     0 },
+		{     1,     4,     1,     0,     0,     0,     0,     0,     0,     0 },
+		{     1,     3,     3,     1,     0,     0,     0,     0,     0,     0 },
+		{     7,    32,    12,    32,     7,     0,     0,     0,     0,     0 },
+		{    19,    75,    50,    50,    75,    19,     0,     0,     0,     0 },
+		{    41,   216,    27,   272,    27,   216,    41,     0,     0,     0 },
+		{   751,  3577,  1323,  2989,  2989,  1323,  3577,   751,     0,     0 },
+		{   989,  5888,  -928, 10496, -4540, 10496,  -928,  5888,   989,     0 },
+		{  2857, 15741,  1080, 19344,  5778,  5778, 19344,  1080, 15741,  2857 }
+	};
+
+	// нормирующие коэффициенты метода Ньютона-Котеса
+	double norm[] = {
+		1.0, 1.0 / 2, 1.0 / 3, 3.0 / 8, 2.0 / 45, 5.0 / 288, 1.0 / 140, 7.0 / 17280, 4.0 / 14175, 9.0 / 89600
+	};
+
+	int step = power > 0 ? power : 1; // шаг изменения кординаты на отрезке [a, b]
+	double h = (b - a) / (n * step); // шаг интегрирования
+	double sum = 0;
+
+	for (int i = 0; i < n; i++) {
+		double s = 0;
+
+		// считыаем частичную сумму
+		for (int j = 0; j <= power; j++)
+			s += coef[power][j] * f(a + (i * step + j) * h);
+
+		sum += norm[power] * s * h; // прибавляем к сумме, умноженной на шаг и нормирующий коэффициент
+	}
+
+	return sum; // возвращаем найденное значение интеграла
+}
+
 // метод Гаусса для 3 точек
-double gaussIntegrate(Fpointer f, double a, double b, int n) {
+double gaussIntegrate(double (*f)(double), double a, double b, int n) {
 	const double Xi[3] = { -sqrt(0.6), 0, sqrt(0.6) }; // узлы интегрирования
 	const double Ci[3] = { 5.0 / 9, 8.0 / 9, 5.0 / 9 }; // веса интегрирования
 
@@ -101,7 +139,7 @@ double gaussIntegrate(Fpointer f, double a, double b, int n) {
 }
 
 // метод Рунге-Кутты 4-го порядка
-double rungeKutt4Integrate(Fpointer f, double a, double b, int n) {
+double rungeKutt4Integrate(double (*f)(double), double a, double b, int n) {
 	double h = (b - a) / n;
 
 	double x0 = a; // начальные условия
@@ -133,7 +171,7 @@ double rungeKutt4Integrate(Fpointer f, double a, double b, int n) {
 
 /**************************** ИНТЕГРИРОВАНИЕ С ЗАДАННОЙ ТОЧНОСТЬЮ ****************************/
 // метод левых прямоугольников
-double squareLeftEpsIntegrate(Fpointer f, double a, double b, double eps) {
+double squareLeftEpsIntegrate(double (*f)(double), double a, double b, double eps) {
 	long n = 2; // начальное число разбиений
 
 	double h = (b - a) / n; // шаг интегрирования
@@ -163,7 +201,7 @@ double squareLeftEpsIntegrate(Fpointer f, double a, double b, double eps) {
 }
 
 // метод центральных прямоугольников
-double squareCenterEpsIntegrate(Fpointer f, double a, double b, double eps) {
+double squareCenterEpsIntegrate(double (*f)(double), double a, double b, double eps) {
 	long n = 2; // начальное число разбиений
 
 	double h = (b - a) / n; // шаг интегрирования
@@ -193,7 +231,7 @@ double squareCenterEpsIntegrate(Fpointer f, double a, double b, double eps) {
 }
 
 // метод правых прямоугольников
-double squareRightEpsIntegrate(Fpointer f, double a, double b, double eps) {
+double squareRightEpsIntegrate(double (*f)(double), double a, double b, double eps) {
 	long n = 2; // начальное число разбиений
 
 	double h = (b - a) / n; // шаг интегрирования
@@ -223,7 +261,7 @@ double squareRightEpsIntegrate(Fpointer f, double a, double b, double eps) {
 }
 
 // метод трапеций
-double trapecyEpsIntegrate(Fpointer f, double a, double b, double eps) {
+double trapecyEpsIntegrate(double (*f)(double), double a, double b, double eps) {
 	long n = 2;
 
 	double h = (b - a) / n;
@@ -251,7 +289,7 @@ double trapecyEpsIntegrate(Fpointer f, double a, double b, double eps) {
 }
 
 // метод Симпсона (парабол)
-double simpsonEpsIntegrate(Fpointer f, double a, double b, double eps) {
+double simpsonEpsIntegrate(double (*f)(double), double a, double b, double eps) {
 	long n = 2; // начальное число разбиений
 
 	double h = (b - a) / n; // шаг интегрирования
@@ -287,7 +325,7 @@ double simpsonEpsIntegrate(Fpointer f, double a, double b, double eps) {
 }
 
 // метод Буля
-double bullEpsIntegrate(Fpointer f, double a, double b, double eps) {
+double bullEpsIntegrate(double (*f)(double), double a, double b, double eps) {
 	long n = 4; // начальное число разбиений
 	
 	double h = (b - a) / n; // шаг интегрирования
@@ -328,8 +366,66 @@ double bullEpsIntegrate(Fpointer f, double a, double b, double eps) {
 	return sum; // возвращаем найденное значение интеграла
 }
 
+// метод Ньютона - Котеса, полином степени power (0 <= power < 10)
+double newtoneKotesEpsIntegrate(double (*f)(double), double a, double b, double eps, int power) {
+	// коэффициенты метода Ньютона-Котеса
+	int coef[10][10] = {
+		{     1,     0,     0,     0,     0,     0,     0,     0,     0,     0 },
+		{     1,     1,     0,     0,     0,     0,     0,     0,     0,     0 },
+		{     1,     4,     1,     0,     0,     0,     0,     0,     0,     0 },
+		{     1,     3,     3,     1,     0,     0,     0,     0,     0,     0 },
+		{     7,    32,    12,    32,     7,     0,     0,     0,     0,     0 },
+		{    19,    75,    50,    50,    75,    19,     0,     0,     0,     0 },
+		{    41,   216,    27,   272,    27,   216,    41,     0,     0,     0 },
+		{   751,  3577,  1323,  2989,  2989,  1323,  3577,   751,     0,     0 },
+		{   989,  5888,  -928, 10496, -4540, 10496,  -928,  5888,   989,     0 },
+		{  2857, 15741,  1080, 19344,  5778,  5778, 19344,  1080, 15741,  2857 }
+	};
+
+	// нормирующие коэффициенты метода Ньютона-Котеса
+	double norm[] = {
+		1.0, 1.0 / 2, 1.0 / 3, 3.0 / 8, 2.0 / 45, 5.0 / 288, 1.0 / 140, 7.0 / 17280, 4.0 / 14175, 9.0 / 89600
+	};
+
+	long n = 2; // начальное число разбиений
+	int step = power > 0 ? power : 1; // шаг изменения кординаты на отрезке [a, b]
+	double h = (b - a) / (n * step); // шаг интегрирования
+	double sum = 0;
+	double sum1;
+
+	for (int i = 0; i < n; i++) {
+		double s = 0;
+
+		// считыаем частичную сумму
+		for (int j = 0; j <= power; j++)
+			s += coef[power][j] * f(a + (i * step + j) * h);
+
+		sum += norm[power] * s * h; // прибавляем к сумме, умноженной на шаг и нормирующий коэффициент
+	}
+
+	do {
+		sum1 = sum; // обновляем старое значение суммы
+		sum = 0; // сбрасываем текущее
+
+		h /= 2; // дробим шаг в два раза
+		n *= 2; // увеличиваем число интервалов в два раза
+
+		for (int i = 0; i < n; i++) {
+			double s = 0;
+
+			// считыаем частичную сумму
+			for (int j = 0; j <= power; j++)
+				s += coef[power][j] * f(a + (i * step + j) * h);
+
+			sum += norm[power] * s * h; // прибавляем к сумме, умноженной на шаг и нормирующий коэффициент
+		}
+	} while (fabs(sum1 - sum) > eps); // повторяем, пока не достигнем нужной точности
+
+	return sum;
+}
+
 // метод Гаусса для 3 точек
-double gaussEpsIntegrate(Fpointer f, double a, double b, double eps) {
+double gaussEpsIntegrate(double (*f)(double), double a, double b, double eps) {
 	const double Xi[3] = { -sqrt(0.6), 0, sqrt(0.6) }; // узлы интегрирования
 	const double Ci[3] = { 5.0 / 9, 8.0 / 9, 5.0 / 9 }; // веса интегрирования
 
@@ -365,7 +461,7 @@ double gaussEpsIntegrate(Fpointer f, double a, double b, double eps) {
 }
 
 // метод Рунге-Кутты 4-го порядка
-double rungeKutt4EpsIntegrate(Fpointer f, double a, double b, double eps) {
+double rungeKutt4EpsIntegrate(double (*f)(double), double a, double b, double eps) {
 	long n = 2; // начальное число разбиений
 
 	double h = (b - a) / n; // шаг интегрирования

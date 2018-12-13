@@ -21,10 +21,12 @@ int main() {
 	}
 
 	std::string method;
-	std::cout << "Enter method ('square left' / 'square center' / 'square right' / 'trapecy' / 'simpson' / 'bull' / 'gauss' / 'runge kutt 4'): ";
+	std::cout << "Enter method ('square left' / 'square center' / 'square right' / 'trapecy' / 'simpson' / 'bull' / 'newtone-kotes' / 'gauss' / 'runge kutt 4'): ";
 	getline(std::cin, method);
 
-	while (method != "square left" && method != "square center" && method != "square right" && method != "trapecy" && method != "simpson" && method != "bull" && method != "gauss" && method != "runge kutt 4") {
+	while (method != "square left" && method != "square center" && method != "square right" && 
+		   method != "trapecy" && method != "simpson" && method != "bull" && 
+		   method != "newtone-kotes" && method != "gauss" && method != "runge kutt 4") {
 		std::cout << "Incorrect option. Try again: ";
 		getline(std::cin, method);
 	}
@@ -61,6 +63,13 @@ int main() {
 		else if (method == "bull") {
 			I = bullEpsIntegrate(f, a, b, eps);
 		}
+		else if (method == "newtone-kotes") {
+			int power;
+			std::cout << "Enter power (0 <= power < 10): ";
+			std::cin >> power;
+
+			I = newtoneKotesEpsIntegrate(f, a, b, eps, power);
+		}
 		else if (method == "gauss") {
 			I = gaussEpsIntegrate(f, a, b, eps);
 		}
@@ -89,6 +98,13 @@ int main() {
 		}
 		else if (method == "bull") {
 			I = bullIntegrate(f, a, b, n);
+		}
+		else if (method == "newtone-kotes") {
+			int power;
+			std::cout << "Enter power (0 <= power < 10): ";
+			std::cin >> power;
+
+			I = newtoneKotesIntegrate(f, a, b, n, power);
 		}
 		else if (method == "gauss") {
 			I = gaussIntegrate(f, a, b, n);

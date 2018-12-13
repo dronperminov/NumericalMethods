@@ -3,34 +3,36 @@
 #include <iostream>
 #include <cmath>
 
-typedef double (*Fpointer)(double); // указатель на функцию для интегрирования
-
 // Интегрирование с заданным количеством узлов
-double squareLeftIntegrate(Fpointer f, double a, double b, int n); // методом левых прямоугольников
-double squareCenterIntegrate(Fpointer f, double a, double b, int n); // методом центральных прямоугольников
-double squareRightIntegrate(Fpointer f, double a, double b, int n); // методом правых прямоугольников
+double squareLeftIntegrate(double (*f)(double), double a, double b, int n); // методом левых прямоугольников
+double squareCenterIntegrate(double (*f)(double), double a, double b, int n); // методом центральных прямоугольников
+double squareRightIntegrate(double (*f)(double), double a, double b, int n); // методом правых прямоугольников
 
-double trapecyIntegrate(Fpointer f, double a, double b, int n); // методом трапеций
+double trapecyIntegrate(double (*f)(double), double a, double b, int n); // методом трапеций
 
-double simpsonIntegrate(Fpointer f, double a, double b, int n); // методом Симпсона (парабол)
+double simpsonIntegrate(double (*f)(double), double a, double b, int n); // методом Симпсона (парабол)
 
-double bullIntegrate(Fpointer f, double a, double b, int n); // методом Буля
+double bullIntegrate(double (*f)(double), double a, double b, int n); // методом Буля
 
-double gaussIntegrate(Fpointer f, double a, double b, int n); // метод Гаусса для 3 точек
+double gaussIntegrate(double (*f)(double), double a, double b, int n); // метод Гаусса для 3 точек
 
-double rungeKutt4Integrate(Fpointer f, double a, double b, int n); // методом Рунге-Кутты 4-го порядка
+double newtoneKotesIntegrate(double (*f)(double), double a, double b, int n, int power); // метод Ньютона-Котеса (0 <= power < 10)
+
+double rungeKutt4Integrate(double (*f)(double), double a, double b, int n); // методом Рунге-Кутты 4-го порядка
 
 // Интегрирование с заданной точностью
-double squareLeftEpsIntegrate(Fpointer f, double a, double b, double eps); // методом левых прямоугольников
-double squareCenterEpsIntegrate(Fpointer f, double a, double b, double eps); // методом центральных прямоугольников
-double squareRightEpsIntegrate(Fpointer f, double a, double b, double eps); // методом правых прямоугольников
+double squareLeftEpsIntegrate(double (*f)(double), double a, double b, double eps); // методом левых прямоугольников
+double squareCenterEpsIntegrate(double (*f)(double), double a, double b, double eps); // методом центральных прямоугольников
+double squareRightEpsIntegrate(double (*f)(double), double a, double b, double eps); // методом правых прямоугольников
 
-double trapecyEpsIntegrate(Fpointer f, double a, double b, double eps); // методом трапеций
+double trapecyEpsIntegrate(double (*f)(double), double a, double b, double eps); // методом трапеций
 
-double simpsonEpsIntegrate(Fpointer f, double a, double b, double eps); // методом Симпсона (парабол)
+double simpsonEpsIntegrate(double (*f)(double), double a, double b, double eps); // методом Симпсона (парабол)
 
-double bullEpsIntegrate(Fpointer f, double a, double b, double eps); // методом Буля
+double bullEpsIntegrate(double (*f)(double), double a, double b, double eps); // методом Буля
 
-double gaussEpsIntegrate(Fpointer f, double a, double b, double eps); // метод Гаусса для 3 точек
+double newtoneKotesEpsIntegrate(double (*f)(double), double a, double b, double eps, int power); // метод Ньютона-Котеса (0 <= power < 10)
 
-double rungeKutt4EpsIntegrate(Fpointer f, double a, double b, double eps); // методом Рунге-Кутты 4-го порядка
+double gaussEpsIntegrate(double (*f)(double), double a, double b, double eps); // метод Гаусса для 3 точек
+
+double rungeKutt4EpsIntegrate(double (*f)(double), double a, double b, double eps); // методом Рунге-Кутты 4-го порядка
